@@ -134,7 +134,7 @@ func (l *Libvirt) Connect() error {
 func (l *Libvirt) Disconnect() error {
 	// close event streams
 	for id := range l.events {
-		if err := l.removeStream(id); err != nil {
+		if err := l.removeStream(id, false); err != nil {
 			return err
 		}
 	}
@@ -248,6 +248,7 @@ func (l *Libvirt) LifecycleEvents() (<-chan DomainEventLifecycleMsg, error) {
 		for e := range stream.Events {
 			c <- e.(*DomainEventCallbackLifecycleMsg).Msg
 		}
+		close(c)
 	}()
 
 	return c, nil
